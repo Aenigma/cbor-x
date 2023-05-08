@@ -468,17 +468,17 @@ function createStructureReader(structure) {
 				return compiledReader(read) // with the right length, so we use it
 			compiledReader = compiledReader.next // see if there is another reader with the right length
 		}
-		if (this.slowReads++ >= 3) { // create a fast compiled reader
-			let array = this.length == length ? this : this.slice(0, length)
-			compiledReader = currentDecoder.keyMap 
-			? new Function('r', 'return {' + array.map(k => currentDecoder.decodeKey(k)).map(k => validName.test(k) ? safeKey(k) + ':r()' : ('[' + JSON.stringify(k) + ']:r()')).join(',') + '}')
-			: new Function('r', 'return {' + array.map(key => validName.test(key) ? safeKey(key) + ':r()' : ('[' + JSON.stringify(key) + ']:r()')).join(',') + '}')
-			if (this.compiledReader)
-				compiledReader.next = this.compiledReader // if there is an existing one, we store multiple readers as a linked list because it is usually pretty rare to have multiple readers (of different length) for the same structure
-			compiledReader.propertyCount = length
-			this.compiledReader = compiledReader
-			return compiledReader(read)
-		}
+		// if (this.slowReads++ >= 3) { // create a fast compiled reader
+		// 	let array = this.length == length ? this : this.slice(0, length)
+		// 	compiledReader = currentDecoder.keyMap 
+		// 	? new Function('r', 'return {' + array.map(k => currentDecoder.decodeKey(k)).map(k => validName.test(k) ? safeKey(k) + ':r()' : ('[' + JSON.stringify(k) + ']:r()')).join(',') + '}')
+		// 	: new Function('r', 'return {' + array.map(key => validName.test(key) ? safeKey(key) + ':r()' : ('[' + JSON.stringify(key) + ']:r()')).join(',') + '}')
+		// 	if (this.compiledReader)
+		// 		compiledReader.next = this.compiledReader // if there is an existing one, we store multiple readers as a linked list because it is usually pretty rare to have multiple readers (of different length) for the same structure
+		// 	compiledReader.propertyCount = length
+		// 	this.compiledReader = compiledReader
+		// 	return compiledReader(read)
+		// }
 		let object = {}
 		if (currentDecoder.keyMap) for (let i = 0; i < length; i++) object[safeKey(currentDecoder.decodeKey(this[i]))] = read()
 		else for (let i = 0; i < length; i++) {
